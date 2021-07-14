@@ -8,19 +8,20 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {model.class}, version = 1, exportSchema = false)
+@Database(entities = {model.class}, version = 2, exportSchema = false)
 
 public abstract class RegionDatabase extends RoomDatabase{
     private  static  final String DATABASE_NAME = "region";
     public  abstract regionImgDao regionImgDao();
-    public  static  volatile  RegionDatabase INSTANCE;
+    public  static  RegionDatabase INSTANCE =null;
 
     public static  RegionDatabase getInstance(Context context)
     {
         if (INSTANCE == null){
             synchronized(RegionDatabase.class){
                 if (INSTANCE ==null){
-                    Room.databaseBuilder(context,RegionDatabase.class, DATABASE_NAME)
+
+                    INSTANCE=Room.databaseBuilder(context,RegionDatabase.class, DATABASE_NAME)
                             .fallbackToDestructiveMigration()
                             .addCallback(callback)
                             .build();

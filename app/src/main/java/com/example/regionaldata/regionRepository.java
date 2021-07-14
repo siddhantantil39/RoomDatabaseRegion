@@ -13,8 +13,9 @@ public class regionRepository {
 
     public regionRepository(Application application){
         database = RegionDatabase.getInstance(application);
+        Log.d("main", "PersonRepository: " + database);
+
         getRegions = database.regionImgDao().getAllRegions();
-        Log.d("main", "PersonRepository: " + getRegions);
 
     }
 

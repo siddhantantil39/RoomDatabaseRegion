@@ -1,5 +1,6 @@
 package com.example.regionaldata;
-import android.content.Context;
+
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,9 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
-import com.squareup.picasso.Picasso;
+
+import com.ahmadrosid.svgloader.SvgLoader;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,10 +19,10 @@ import java.util.List;
 
 public class regionAdapter extends RecyclerView.Adapter<regionAdapter.regionViewHolder> {
 
-    private Context context;
+    private Activity context;
     private List<model> regions;
 
-    public regionAdapter(Context context, List<model> regions) {
+    public regionAdapter(Activity context, List<model> regions) {
         this.context = context;
         this.regions = regions;
     }
@@ -36,7 +37,14 @@ public class regionAdapter extends RecyclerView.Adapter<regionAdapter.regionView
     @Override
     public void onBindViewHolder(@NonNull @NotNull regionAdapter.regionViewHolder holder, int position) {
         model region = regions.get(position);
-        Picasso.get().load(region.getFlag()).into(holder.imageView);
+       // Picasso.get().load(region.getFlag()).into(holder.imageView);
+//        Glide.with(context)
+//                .load(region.getFlag())
+//                .into(holder.imageView);
+    SvgLoader.pluck()
+                .with(context)
+                .setPlaceHolder(R.mipmap.ic_launcher, R.mipmap.ic_launcher)
+                .load(region.getFlag(),holder.imageView);
         holder.name.setText(region.getName());
         holder.capital.setText(region.getCapital());
         holder.region.setText(region.getRegion());
@@ -50,8 +58,9 @@ public class regionAdapter extends RecyclerView.Adapter<regionAdapter.regionView
         return regions.size();
     }
 
-    public void getAllRegions(List<model> regions)
+    public void setAllRegions(List<model> regions)
     {
+
         this.regions=regions;
     }
 

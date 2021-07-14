@@ -1,18 +1,20 @@
 package com.example.regionaldata;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,28 +33,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        repository = new regionRepository(getApplication());
-        regions = new ArrayList<>();
-        recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this,2));
-        recyclerView.setHasFixedSize(true);
-        regionViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(regionViewModel.class);
-        regionAdapter = new regionAdapter(this,regions);
         makeRequest();
+
+       repository = new regionRepository(getApplication());
+       regions = new ArrayList<>();
+       recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+       recyclerView.setLayoutManager(new LinearLayoutManager(this));
+       recyclerView.setHasFixedSize(true);
+       regionViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(regionViewModel.class);
+       regionAdapter = new regionAdapter(this,regions);
         //important
         regionViewModel.getAllRegions().observe(this, new Observer<List<model>>() {
             @Override
             public void onChanged(List<model> regions) {
                 recyclerView.setAdapter(regionAdapter);
-                regionAdapter.getAllRegions(regions);
-                Log.d("main", "onChanged:"+regions);
+                regionAdapter.setAllRegions(regions);
+                Log.d("main", "viewModelOnChanged:"+regions);
             }
         });
     }
 
     private  void makeRequest(){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://restcountries.eu/rest/v2/region/europe")
+                .baseUrl("https://restcountries.eu/rest/v2/region/")
                 .addConverterFactory(GsonConverterFactory.create()).build();
         regionApi api = retrofit.create(regionApi.class);
         Call<List<model>> call = api.getAllRegions();
@@ -60,9 +63,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call<List<model>> call, Response<List<model>> response) {
                 if(response.isSuccessful()) {
-                    Log.d("main", "onChanged:"+regions);
+                    Log.d("main", "onChanged:"+response.body());
 
-                    repository.insert(response.body());
+                  repository.insert(response.body());
                 }
             }
 
